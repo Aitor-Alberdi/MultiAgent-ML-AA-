@@ -63,6 +63,7 @@ If you want to use jupyter notebook, run the container with the following comman
 
 ```
 docker run -d \
+    --privileged \
     --name agents_cont \
     -v $(pwd):/repository:ro \
     -v agents_volume:/workspace \
