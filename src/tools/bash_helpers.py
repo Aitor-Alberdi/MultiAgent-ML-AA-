@@ -65,14 +65,10 @@ class BashProcess:
         self.prompt = ""
         self.process = None
         self.timeout = timeout
-        self.agent_id = agent_id
         if persistent:
             self.prompt = str(uuid4())
             self.process = self._initialize_persistent_process(self, self.prompt, agent_id)
 
-    def custom_reset(self):
-        self.prompt = str(uuid4())
-        self.process = self._initialize_persistent_process(self, self.prompt, self.agent_id)
 
     @staticmethod
     def _lazy_import_pexpect() -> pexpect:
@@ -104,7 +100,7 @@ class BashProcess:
         """
         pexpect = self._lazy_import_pexpect()
         process = pexpect.spawn(
-            "sudo", ["-u", agent_id, "bash"], encoding="utf-8"
+            "bash", encoding="utf-8"
         )
 
         process.sendline("export PATH=/opt/conda/bin:$PATH")
@@ -194,8 +190,7 @@ class BashProcess:
         try:
             self.process.expect([self.prompt, pexpect.EOF], timeout=self.timeout)
         except pexpect.TIMEOUT:
-            self.custom_reset()
-            return f"Timeout error while executing command {command}. " + "Resetting bash to it's default state."
+            return f"Timeout error while executing command {command}"
         if self.process.after == pexpect.EOF:
             return f"Exited with error status: {self.process.exitstatus}"
         output = self.process.before
