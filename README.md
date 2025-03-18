@@ -24,6 +24,7 @@ docker build -t agents_img .
 - Run the container
 ```
 docker run -d \
+    --privileged \
     --name agents_cont \
     -v $(pwd):/repository:ro \
     -v agents_volume:/workspace/runs \
